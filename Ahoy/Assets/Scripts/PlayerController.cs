@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour {
 	Vector3 badVector;
 
 	float timeWithoutMoving = 0,
-		  timeUntilMoveSetInSeconds = 2;
+		  timeUntilMoveSetInSeconds = 1;
 
 	List<Vector3> movePoints;
 	PathVisualizer pathVisualizer;
@@ -102,6 +102,7 @@ public class PlayerController : MonoBehaviour {
 		var point = TestForHitFromScreen(inputPoint);
 		if (point != badVector){
 			movePoints.Add(point);
+			pathVisualizer.IndicateMoveSet();
 		}
 	}
 
@@ -114,17 +115,28 @@ public class PlayerController : MonoBehaviour {
 		return badVector;
 	}
 
+	void SendInputAtScreenPoint(Vector3 screenPoint){
+		RaycastHit info;
+		Ray ray = Camera.main.ScreenPointToRay(screenPoint);
+		if (Physics.Raycast(ray, out info) && info.collider.GetComponent<PlayerBoat>() != null){
+			info.collider.SendMessage("OnPlayerInput");
+		}
+	}
+
 	public void ClearMoves(){
 		movePoints.Clear();
 		pathVisualizer.ClearPoints();
 	}
 
-	void SendInputAtScreenPoint(Vector3 screenPoint){
-		RaycastHit info;
-		Ray ray = Camera.main.ScreenPointToRay(screenPoint);
-		if (Physics.Raycast(ray, out info)){
-			info.collider.SendMessage("OnPlayerInput");
-		}
+	public void ClearShots(){
+		
 	}
 
+	public void ClearTurns(){
+		
+	}
+
+	public void TestRun(){
+		
+	}
 }
