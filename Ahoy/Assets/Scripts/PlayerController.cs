@@ -10,6 +10,9 @@ using System.IO;
 
 public class PlayerController : MonoBehaviour {
 
+	[SerializeField] protected MoveMarker moveMarkerPrefab;
+	List<MoveMarker> moveMarkers;
+
 	static PlayerController instance;
 
 	bool dragging = false,
@@ -44,6 +47,7 @@ public class PlayerController : MonoBehaviour {
 			movePoints = new List<Vector3>();
 			pathVisualizer = FindObjectOfType<PathVisualizer>();
 			badVector = Vector3.one * 5000;
+			moveMarkers = new List<MoveMarker>();
 		}
 	}
 
@@ -96,13 +100,12 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-
-
 	void SetMove(Vector3 inputPoint){
 		var point = TestForHitFromScreen(inputPoint);
 		if (point != badVector){
 			movePoints.Add(point);
 			pathVisualizer.IndicateMoveSet();
+			CreateMarker(point);
 		}
 	}
 
@@ -123,8 +126,24 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	void CreateMarker(Vector3 position){
+		var marker = GameObject.Instantiate(moveMarkerPrefab);
+		marker.transform.position = position;
+		marker.transform.rotation = Quaternion.identity;
+
+		moveMarkers.Add(marker.GetComponent<MoveMarker>());
+	}
+
+	void ClearMarkers(){
+		for (int i = 0; i < moveMarkers.Count; i++){
+			Destroy(moveMarkers[i].gameObject);
+		}
+		moveMarkers.Clear();
+	}
+
 	public void ClearMoves(){
 		movePoints.Clear();
+		ClearMarkers();
 		pathVisualizer.ClearPoints();
 	}
 
