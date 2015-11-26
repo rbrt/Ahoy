@@ -8,14 +8,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-public class MoveMarker : MonoBehaviour {
+public class MoveMarker : AcceptsInput {
 
-	public void OnPlayerInput(){
-		// Open menu for configuring rotations and shots
+	Quaternion targetRotation;
+
+	static MoveMarker tappedMarker;
+
+	public Quaternion TargetRotation {
+		get {
+			return targetRotation;
+		}
+	}
+
+	public override void OnPlayerInput(){
+		MoveMarkerMenu.Instance.ShowMenu(transform.position);
+		tappedMarker = this;
 	}
 
 	void Awake(){
 		this.StartCoroutine(AnimateMarker());
+	}
+
+	public static void SetTargetRotation(Quaternion target){
+		if (tappedMarker != null){
+			tappedMarker.targetRotation = target;
+		}
+	}
+
+	public static void ClearTargetMarker(){
+		tappedMarker = null;
 	}
 
 	IEnumerator AnimateMarker(){

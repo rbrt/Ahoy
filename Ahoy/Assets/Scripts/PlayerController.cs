@@ -15,13 +15,21 @@ public class PlayerController : MonoBehaviour {
 
 	static PlayerController instance;
 
+	const string inputLayerName = "PlayerInput";
+
 	bool dragging = false,
-		 holding = false;
+		 firing = false,
+		 turning = false;
+
 	Vector3 lastPosition = Vector3.zero;
 	Vector3 badVector;
 
 	float timeWithoutMoving = 0,
-		  timeUntilMoveSetInSeconds = 1;
+		  timeUntilMoveSetInSeconds = 0;
+
+	const float moveWaitTime = .5f,
+				firingWaitTime = 1f,
+				turningWaitTime = 1f;
 
 	List<Vector3> movePoints;
 	PathVisualizer pathVisualizer;
@@ -32,6 +40,33 @@ public class PlayerController : MonoBehaviour {
 		}
 		set {
 			dragging = value;
+		}
+	}
+
+	public bool Firing {
+		get {
+			return firing;
+		}
+		set {
+			firing = value;
+		}
+	}
+
+	public bool Turning {
+		get {
+			return turning;
+		}
+		set {
+			turning = value;
+		}
+	}
+
+	public Vector3 LastPosition {
+		get {
+			return lastPosition;
+		}
+		set {
+			lastPosition = value;
 		}
 	}
 
@@ -58,7 +93,10 @@ public class PlayerController : MonoBehaviour {
 
 	List<Vector3> drawPoints;
 	void DrawPath(){
-		if (!dragging && movePoints.Count == 0){
+		if ((!dragging && movePoints.Count == 0) ||
+			turning ||
+			firing)
+		{
 			return;
 		}
 
@@ -79,12 +117,32 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void HandleInput(){
-		if (dragging){
-			//Debug.Log(Time.time - timeWithoutMoving);
+		System.Action inputAction = () => {};
+		if (firing){
+			inputAction = () => SetFiringTrajectory();
+			timeUntilMoveSetInSeconds = firingWaitTime;
 
+			if (dragging){
+				PlayerBoat.Instance.FacePoint(TestForHitFromScreen(lastPosition));
+			}
+		}
+		else if (turning){
+			inputAction = () => SetRotation();
+			timeUntilMoveSetInSeconds = turningWaitTime;
+
+			if (dragging){
+				PlayerBoat.Instance.FacePoint(TestForHitFromScreen(lastPosition));
+			}
+		}
+		else{
+			timeUntilMoveSetInSeconds = moveWaitTime;
+			inputAction = () => SetMove(Input.mousePosition);
+		}
+
+		if (dragging){
 			if (Time.time - timeWithoutMoving >= timeUntilMoveSetInSeconds){
-				SetMove(Input.mousePosition);
-				timeWithoutMoving = Time.time;
+				inputAction();
+				timeWithoutMoving = Time.time - timeWithoutMoving * 2;
 			}
 
 			if (Input.mousePosition != lastPosition){
@@ -93,12 +151,16 @@ public class PlayerController : MonoBehaviour {
 			lastPosition = Input.mousePosition;
 		}
 		if (Input.GetMouseButtonDown(0)){
+			dragging = true;
+			timeWithoutMoving = Time.time;
 			SendInputAtScreenPoint(Input.mousePosition);		
 		}
 		if (Input.GetMouseButtonUp(0)){
 			dragging = false;
 		}
 	}
+
+
 
 	void SetMove(Vector3 inputPoint){
 		var point = TestForHitFromScreen(inputPoint);
@@ -107,6 +169,18 @@ public class PlayerController : MonoBehaviour {
 			pathVisualizer.IndicateMoveSet();
 			CreateMarker(point);
 		}
+	}
+
+	void SetRotation(){
+		MoveMarker.SetTargetRotation(PlayerBoat.Instance.transform.rotation);
+		PlayerBoat.Instance.transform.rotation = Quaternion.identity;
+		timeWithoutMoving = Time.time;
+		dragging = false;
+		turning = false;
+	}
+
+	void SetFiringTrajectory(){
+		firing = false;
 	}
 
 	Vector3 TestForHitFromScreen(Vector3 inputPoint){
@@ -121,8 +195,13 @@ public class PlayerController : MonoBehaviour {
 	void SendInputAtScreenPoint(Vector3 screenPoint){
 		RaycastHit info;
 		Ray ray = Camera.main.ScreenPointToRay(screenPoint);
-		if (Physics.Raycast(ray, out info) && info.collider.GetComponent<PlayerBoat>() != null){
-			info.collider.SendMessage("OnPlayerInput");
+		if (Physics.Raycast(ray, out info)){
+			if (info.collider.GetComponent<AcceptsInput>() != null){
+				info.collider.SendMessage("OnPlayerInput");
+			}
+		}
+		else if (MoveMarkerMenu.Instance.Open){
+			MoveMarkerMenu.Instance.HideMenu();
 		}
 	}
 
