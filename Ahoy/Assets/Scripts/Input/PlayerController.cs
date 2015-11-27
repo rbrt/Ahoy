@@ -129,8 +129,6 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void HandleInput(){
-		Debug.Log(currentInputHandler.GetType().ToString());
-
 		if (Input.GetMouseButtonDown(0)){
 			currentInputHandler.HandleInputDown();
 			SendInputAtScreenPoint(Input.mousePosition);

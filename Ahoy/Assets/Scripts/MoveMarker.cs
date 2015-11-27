@@ -11,6 +11,7 @@ using System.IO;
 public class MoveMarker : AcceptsInput {
 
 	Quaternion targetRotation;
+	Vector3 playerShot;
 
 	static MoveMarker tappedMarker;
 
@@ -32,6 +33,12 @@ public class MoveMarker : AcceptsInput {
 	public static void SetTargetRotation(Quaternion target){
 		if (tappedMarker != null){
 			tappedMarker.targetRotation = target;
+		}
+	}
+
+	public static void SetTargetFiringStrength(Vector3 shot){
+		if (tappedMarker != null){
+			tappedMarker.playerShot = shot;
 		}
 	}
 
