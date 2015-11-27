@@ -61,6 +61,8 @@ public class MoveMarkerMenu : MonoBehaviour {
 			return;
 		}
 
+		PlayerController.Instance.UnsetInputHandler();
+
 		open = true;
 		var translatedPoint = Camera.main.WorldToScreenPoint(worldPoint);
 		var cachedTransform = mainPanel.GetComponent<RectTransform>();
