@@ -19,7 +19,8 @@ public class PlayerController : MonoBehaviour {
 
 	bool dragging = false,
 		 firing = false,
-		 turning = false;
+		 turning = false,
+		 moving = false;
 
 	Vector3 lastPosition = Vector3.zero;
 	Vector3 badVector;
@@ -43,11 +44,31 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	public bool Moving {
+		get {
+			return moving;
+		}
+		set {
+			if (value){
+				firing = false;
+				turning = false;
+			}
+			if (!moving){
+				SetMoveAtPoint(PlayerBoat.Instance.transform.position);
+			}
+			moving = value;
+		}
+	}
+
 	public bool Firing {
 		get {
 			return firing;
 		}
 		set {
+			if (value){
+				moving = false;
+				turning = false;
+			}
 			firing = value;
 		}
 	}
@@ -57,6 +78,10 @@ public class PlayerController : MonoBehaviour {
 			return turning;
 		}
 		set {
+			if (value){
+				moving = false;
+				firing = false;
+			}
 			turning = value;
 		}
 	}
@@ -101,19 +126,20 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		drawPoints = new List<Vector3>();
-		drawPoints.Add(PlayerBoat.Instance.transform.position);
 		drawPoints.AddRange(movePoints);
 
-		if (dragging){
+		if (dragging && moving){
 			drawPoints.Add(TestForHitFromScreen(lastPosition));
 		}
 
+		Vector3 temp = Vector3.one;
 		for (int i = 0; i < drawPoints.Count; i++){
-			drawPoints[i] = drawPoints[i] + Vector3.up;
+			temp = drawPoints[i];
+			temp.y = 1;
+			drawPoints[i] = temp;
 		}
 
 		pathVisualizer.SetPoints(drawPoints);
-
 	}
 
 	void HandleInput(){
@@ -134,7 +160,7 @@ public class PlayerController : MonoBehaviour {
 				PlayerBoat.Instance.FacePoint(TestForHitFromScreen(lastPosition));
 			}
 		}
-		else{
+		else if (moving){
 			timeUntilMoveSetInSeconds = moveWaitTime;
 			inputAction = () => SetMove(Input.mousePosition);
 		}
@@ -142,7 +168,7 @@ public class PlayerController : MonoBehaviour {
 		if (dragging){
 			if (Time.time - timeWithoutMoving >= timeUntilMoveSetInSeconds){
 				inputAction();
-				timeWithoutMoving = Time.time - timeWithoutMoving * 2;
+				timeWithoutMoving = Time.time * 2;
 			}
 
 			if (Input.mousePosition != lastPosition){
@@ -157,18 +183,21 @@ public class PlayerController : MonoBehaviour {
 		}
 		if (Input.GetMouseButtonUp(0)){
 			dragging = false;
+			moving = false;
 		}
 	}
-
-
 
 	void SetMove(Vector3 inputPoint){
 		var point = TestForHitFromScreen(inputPoint);
 		if (point != badVector){
-			movePoints.Add(point);
-			pathVisualizer.IndicateMoveSet();
-			CreateMarker(point);
+			SetMoveAtPoint(point);
 		}
+	}
+
+	void SetMoveAtPoint(Vector3 point){
+		movePoints.Add(point);
+		pathVisualizer.IndicateMoveSet();
+		CreateMarker(point);
 	}
 
 	void SetRotation(){

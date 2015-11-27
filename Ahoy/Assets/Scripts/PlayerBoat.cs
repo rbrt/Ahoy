@@ -26,6 +26,8 @@ public class PlayerBoat : AcceptsInput {
 	}
 
 	public override void OnPlayerInput(){
-		PlayerController.Instance.Dragging = true;
+		if (!PlayerController.Instance.Firing && !PlayerController.Instance.Turning){
+			PlayerController.Instance.Moving = true;
+		}
 	}
 }
