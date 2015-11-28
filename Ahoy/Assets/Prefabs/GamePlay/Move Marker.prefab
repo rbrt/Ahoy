@@ -189,7 +189,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 146778}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3843d98f887d94e5c9240392fc4cf67a, type: 3}
+  m_Script: {fileID: 11500000, guid: e706a2d028d4746efb5586c876e28d50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   shotVisualizer: {fileID: 11449690}

@@ -63,7 +63,7 @@ public class TurningHandler : InputHandler {
 	}
 
 	bool SetRotation(){
-		MoveMarker.SetTargetRotation(PlayerBoat.Instance.transform.rotation);
+		MoveMarkerManager.SetTargetRotation(PlayerBoat.Instance.transform.rotation);
 		PlayerBoat.Instance.transform.rotation = Quaternion.identity;
 		return releasesControlOnAction;
 	}

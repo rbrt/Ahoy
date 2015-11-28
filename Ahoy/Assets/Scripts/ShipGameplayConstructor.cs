@@ -13,6 +13,7 @@ public class ShipGameplayConstructor : MonoBehaviour {
 	[SerializeField] protected GameObject playerControllerPrefab;
 	[SerializeField] protected GameObject playerBoatPrefab;
 	[SerializeField] protected GameObject oceanPrefab;
+	[SerializeField] protected GameObject moveMarkerManagerPrefab;
 
 	Vector3 defaultStartingPosition = new Vector3(-10, 0, -10);
 
@@ -27,6 +28,11 @@ public class ShipGameplayConstructor : MonoBehaviour {
 		var playerBoat = GameObject.Instantiate(playerBoatPrefab) as GameObject;
 		playerBoat.transform.localPosition = defaultStartingPosition;
 		playerBoat.transform.localRotation = Quaternion.identity;
+
+		var moveMarkerManager = GameObject.Instantiate(moveMarkerManagerPrefab) as GameObject;
+		moveMarkerManager.transform.SetParent(this.transform);
+		moveMarkerManager.transform.localPosition = Vector3.zero;
+		moveMarkerManager.transform.localRotation = Quaternion.identity;
 	}
 
 }

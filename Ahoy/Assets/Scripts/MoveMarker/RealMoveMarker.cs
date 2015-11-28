@@ -8,8 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-public class MoveMarker : AcceptsInput {
-
+public class RealMoveMarker : MoveMarker {
 	const float proxyBoatAlpha = .6f;
 	const float firingIndicationSensitivity = 6; // 4 gives a reasonable visualization on a power scale of 0 - 4.5
 
@@ -20,8 +19,6 @@ public class MoveMarker : AcceptsInput {
 	Vector3 playerShot;
 
 	bool fadingBoat = false;
-
-	static MoveMarker tappedMarker;
 
 	public Quaternion TargetRotation {
 		get {
@@ -35,13 +32,14 @@ public class MoveMarker : AcceptsInput {
 		}
 	}
 
+	// TODO: Move setting functionality into MoveMarkerManager
 	public override void OnPlayerInput(){
-		if (tappedMarker != null && tappedMarker != this){
-			tappedMarker.UnselectMoveMarker();
+		if (MoveMarkerManager.CurrentMarker != this){
+			MoveMarkerManager.ClearTargetMarker();
 		}
 
 		this.StartSafeCoroutine(MoveMarkerMenu.Instance.ShowMenu(transform.position));
-		tappedMarker = this;
+		MoveMarkerManager.SetCurrentMarker(this);
 		this.StartSafeCoroutine(FadeBoat(true, .25f));
 	}
 
@@ -56,43 +54,16 @@ public class MoveMarker : AcceptsInput {
 		this.StartSafeCoroutine(FadeBoat(false, 0));
 	}
 
-	public static void SetTargetRotation(Quaternion target){
-		if (tappedMarker != null){
-			tappedMarker.targetRotation = target;
-		}
+	public override void IndicateMoveSet(){
+		shotVisualizer.IndicateMoveSet();
 	}
 
-	public static void SetTargetFiringStrength(Vector3 shot){
-		if (tappedMarker != null){
-			Vector3 scaledForScreen = shot;
-			scaledForScreen.x /= Screen.width / firingIndicationSensitivity;
-			scaledForScreen.y /= Screen.height / firingIndicationSensitivity;
-
-			float strength = PlayerBoat.maxFiringPower;
-			if (scaledForScreen.magnitude > strength){
-				scaledForScreen = Vector3.ClampMagnitude(scaledForScreen, strength);
-			}
-
-			tappedMarker.playerShot = scaledForScreen;
-		}
+	public override void SetTargetRotation(Quaternion targetRotation){
+		this.targetRotation = targetRotation;
 	}
 
-	public static void ClearTargetMarker(){
-		tappedMarker = null;
-	}
-
-	public static void ClearFiringVisualizer(){
-		tappedMarker.playerShot = Vector3.zero;
-	}
-
-	public static void IndicateMoveSet(){
-		if (tappedMarker != null){
-			tappedMarker.shotVisualizer.IndicateMoveSet();
-		}
-	}
-
-	public static Vector3 PositionOnCamera(){
-		return CameraManager.WorldToGameCameraPoint(tappedMarker.transform.position);
+	public override void SetPlayerShot(Vector3 playerShot){
+		this.playerShot = playerShot;
 	}
 
 	public void UnselectMoveMarker(){
@@ -119,7 +90,11 @@ public class MoveMarker : AcceptsInput {
 	}
 
 	void ClearFiringStrength(){
-		
+		List<Vector3> shotPoints = new List<Vector3>();
+		shotPoints.Add(Vector3.zero);
+		shotPoints.Add(Vector3.zero);
+		shotVisualizer.SetPoints(shotPoints);
+
 	}
 
 	void Update(){

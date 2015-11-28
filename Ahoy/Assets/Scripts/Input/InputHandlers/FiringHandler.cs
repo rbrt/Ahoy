@@ -37,7 +37,7 @@ public class FiringHandler : InputHandler {
 
 	public override void HandleDragInput(){
 		currentPoint = PlayerController.LastInputPosition;
-		MoveMarker.SetTargetFiringStrength(GetShotVector());
+		MoveMarkerManager.SetTargetFiringStrength(GetShotVector());
 	}
 
 	public override void HandleInputUp(){
@@ -53,16 +53,16 @@ public class FiringHandler : InputHandler {
 	}
 
 	public override void OnSetHandler(){
-		initialPoint = MoveMarker.PositionOnCamera();
+		initialPoint = MoveMarkerManager.PositionOnCamera();
 		initialPoint.z = 0;
 
 		currentPoint = PlayerController.LastInputPosition;
 
-		MoveMarker.ClearFiringVisualizer();
+		MoveMarkerManager.ClearFiringVisualizer();
 	}
 
 	public override void OnUnSetHandler(){
-		MoveMarker.ClearTargetMarker();
+		MoveMarkerManager.ClearTargetMarker();
 		CleanHandler();
 	}
 
@@ -75,8 +75,8 @@ public class FiringHandler : InputHandler {
 	}
 
 	bool SetFiringTrajectory(){
-		MoveMarker.IndicateMoveSet();
-		MoveMarker.SetTargetFiringStrength(GetShotVector());
+		MoveMarkerManager.IndicateMoveSet();
+		MoveMarkerManager.SetTargetFiringStrength(GetShotVector());
 		return releasesControlOnAction;
 	}
 

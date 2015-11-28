@@ -254,6 +254,8 @@ MonoBehaviour:
     type: 2}
   playerBoatPrefab: {fileID: 161626, guid: 5f9ad48d98a504b0bb14a24605eb6f2a, type: 2}
   oceanPrefab: {fileID: 144962, guid: 7dc9612d281114b4fae1d53f1a23fc11, type: 2}
+  moveMarkerManagerPrefab: {fileID: 197412, guid: 70e0a9a23912d436e8f0dad6ce5aa8d9,
+    type: 2}
 --- !u!114 &11455260
 MonoBehaviour:
   m_ObjectHideFlags: 1
