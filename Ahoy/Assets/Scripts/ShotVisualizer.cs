@@ -15,6 +15,8 @@ public class ShotVisualizer : MonoBehaviour {
 	void Awake(){
 		lineRenderer = GetComponent<LineRenderer>();
 		lineRenderer.enabled = false;
+		Material ownMaterial = new Material(lineRenderer.sharedMaterial);
+		lineRenderer.material = ownMaterial;
 	}
 
 	public void IndicateMoveSet(){

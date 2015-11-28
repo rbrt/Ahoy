@@ -17,6 +17,9 @@ public class MoveMarkerMenu : MonoBehaviour {
 	bool transitioning = false,
 		 open = false;
 
+	float presentTime = .25f,
+		  dismissalTime = .2f;
+
 	CanvasGroup canvasGroup;
 	Canvas canvas;
 
@@ -56,9 +59,9 @@ public class MoveMarkerMenu : MonoBehaviour {
 		this.StartSafeCoroutine(DismissMenu());
 	}
 
-	public void ShowMenu(Vector3 worldPoint){
-		if (transitioning || open){
-			return;
+	public IEnumerator ShowMenu(Vector3 worldPoint){
+		while (transitioning || open){
+			yield return null;
 		}
 
 		PlayerController.Instance.UnsetInputHandler();
@@ -101,7 +104,7 @@ public class MoveMarkerMenu : MonoBehaviour {
 	IEnumerator DismissMenu(){
 		transitioning = true;
 
-		for (float i = 0; i <= 1; i += Time.deltaTime / .25f){
+		for (float i = 0; i <= 1; i += Time.deltaTime / dismissalTime){
 			canvasGroup.alpha = 1 - i;
 			yield return null;
 		}
@@ -115,8 +118,8 @@ public class MoveMarkerMenu : MonoBehaviour {
 	IEnumerator PresentMenu(){
 		transitioning = true;
 
-		for (float i = 0; i <= 1; i += Time.deltaTime / .25f){
-			canvasGroup.alpha = 1;
+		for (float i = 0; i <= 1; i += Time.deltaTime / presentTime){
+			canvasGroup.alpha = i;
 			yield return null;
 		}
 		canvasGroup.alpha = 1;

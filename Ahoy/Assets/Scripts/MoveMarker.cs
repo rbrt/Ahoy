@@ -39,7 +39,7 @@ public class MoveMarker : AcceptsInput {
 			tappedMarker.UnselectMoveMarker();
 		}
 
-		MoveMarkerMenu.Instance.ShowMenu(transform.position);
+		this.StartSafeCoroutine(MoveMarkerMenu.Instance.ShowMenu(transform.position));
 		tappedMarker = this;
 		this.StartSafeCoroutine(FadeBoat(true, .25f));
 	}
@@ -47,6 +47,11 @@ public class MoveMarker : AcceptsInput {
 	void Awake(){
 		this.StartSafeCoroutine(AnimateMarker());
 		playerShot = Vector3.zero;
+
+		var proxyRenderer = proxyBoat.GetComponent<Renderer>();
+		Material boatMaterial = new Material(proxyRenderer.sharedMaterial);
+		proxyRenderer.material = boatMaterial;
+
 		this.StartSafeCoroutine(FadeBoat(false, 0));
 	}
 
