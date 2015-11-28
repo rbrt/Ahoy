@@ -34,7 +34,7 @@ public class TurningHandler : InputHandler {
 
 	public override void HandleDragInput(){
 		if (PlayerController.Dragging){
-			PlayerBoat.Instance.FacePoint(PlayerController.TestForHitFromScreen(PlayerController.LastInputPosition));
+			PlayerBoat.Instance.FacePoint(CameraManager.TestForHitFromScreen(PlayerController.LastInputPosition));
 		}
 	}
 

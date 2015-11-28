@@ -23,6 +23,8 @@ public class MoveMarkerMenu : MonoBehaviour {
 	CanvasGroup canvasGroup;
 	Canvas canvas;
 
+	Camera shipGameplayCamera;
+
 	public static MoveMarkerMenu Instance{
 		get {
 			return instance;
@@ -43,6 +45,8 @@ public class MoveMarkerMenu : MonoBehaviour {
 			canvasGroup.alpha = 0;
 			canvasGroup.interactable = false;
 			canvasGroup.blocksRaycasts = false;
+
+			shipGameplayCamera = CameraManager.Instance.ShipGameplayCamera;
 		}
 	}
 
@@ -67,7 +71,7 @@ public class MoveMarkerMenu : MonoBehaviour {
 		PlayerController.Instance.UnsetInputHandler();
 
 		open = true;
-		var translatedPoint = CameraManager.Instance.ShipGameplayCamera.WorldToScreenPoint(worldPoint);
+		var translatedPoint = shipGameplayCamera.WorldToScreenPoint(worldPoint);
 		var cachedTransform = mainPanel.GetComponent<RectTransform>();
 		Vector2 uiPosition = new Vector2(translatedPoint.x / canvas.scaleFactor,
 										 translatedPoint.y / canvas.scaleFactor);

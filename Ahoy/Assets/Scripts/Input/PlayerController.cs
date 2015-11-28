@@ -23,15 +23,12 @@ public class PlayerController : MonoBehaviour {
 	bool dragging = false;
 
 	Vector3 lastPosition = Vector3.zero;
-	public static Vector3 badVector = Vector3.one * 9999;
 
 	float timeWithoutMoving = 0;
 
 	const float moveWaitTime = .5f,
 				firingWaitTime = 1f,
 				turningWaitTime = 1f;
-
-	Camera gameplayCamera;
 
 	InputHandler currentInputHandler;
 
@@ -110,7 +107,6 @@ public class PlayerController : MonoBehaviour {
 	void Awake (){
 		if (instance == null){
 			instance = this;
-			gameplayCamera = CameraManager.Instance.ShipGameplayCamera;
 				
 			SetInputHandler(nullInputHandler);
 		}
@@ -134,7 +130,7 @@ public class PlayerController : MonoBehaviour {
 	void HandleInput(){
 		if (Input.GetMouseButtonDown(0)){
 			currentInputHandler.HandleInputDown();
-			SendInputAtScreenPoint(Input.mousePosition);
+			CameraManager.SendInputAtScreenPoint(Input.mousePosition);
 			dragging = true;
 			timeWithoutMoving = Time.time;		
 		}
@@ -163,28 +159,6 @@ public class PlayerController : MonoBehaviour {
 	public void UnsetInputHandler(){
 		currentInputHandler.OnUnSetHandler();
 		SetInputHandler(nullInputHandler);
-	}
-
-	public static Vector3 TestForHitFromScreen(Vector3 inputPoint){
-		Ray fromCamera = instance.gameplayCamera.ScreenPointToRay(inputPoint);
-		RaycastHit info;
-		if (Physics.Raycast(fromCamera, out info)){
-			return info.point;
-		}
-		return badVector;
-	}
-
-	public static void SendInputAtScreenPoint(Vector3 screenPoint){
-		RaycastHit info;
-		Ray ray = instance.gameplayCamera.ScreenPointToRay(screenPoint);
-		if (Physics.Raycast(ray, out info)){
-			if (info.collider.GetComponent<AcceptsInput>() != null){
-				info.collider.SendMessage("OnPlayerInput");
-			}
-		}
-		else if (MoveMarkerMenu.Instance.Open){
-			MoveMarkerMenu.Instance.HideMenu();
-		}
 	}
 
 	public void ClearShots(){

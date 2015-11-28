@@ -60,7 +60,7 @@ public class MoveHandler : InputHandler {
 		drawPoints.AddRange(movePoints);
 
 		if (PlayerController.Dragging){
-			drawPoints.Add(PlayerController.TestForHitFromScreen(PlayerController.LastInputPosition));
+			drawPoints.Add(CameraManager.TestForHitFromScreen(PlayerController.LastInputPosition));
 		}
 
 		Vector3 temp = Vector3.one;
@@ -97,8 +97,8 @@ public class MoveHandler : InputHandler {
 	}
 
 	bool SetMove(){
-		var point = PlayerController.TestForHitFromScreen(PlayerController.LastInputPosition);
-		if (point != PlayerController.badVector){
+		var point = CameraManager.TestForHitFromScreen(PlayerController.LastInputPosition);
+		if (point != CameraManager.badVector){
 			SetMoveAtPoint(point);
 		}
 
