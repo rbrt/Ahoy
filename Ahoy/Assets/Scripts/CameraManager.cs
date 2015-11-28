@@ -41,6 +41,10 @@ public class CameraManager : MonoBehaviour {
 		}
 	}
 
+	public static Vector3 WorldToGameCameraPoint(Vector3 worldPoint){
+		return instance.shipGameplayCamera.WorldToScreenPoint(worldPoint);
+	}
+
 	public Camera ShipGameplayCamera {
 		get {	
 			return shipGameplayCamera;

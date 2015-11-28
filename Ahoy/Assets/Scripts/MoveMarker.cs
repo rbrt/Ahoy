@@ -11,6 +11,7 @@ using System.IO;
 public class MoveMarker : AcceptsInput {
 
 	const float proxyBoatAlpha = .6f;
+	const float firingIndicationSensitivity = 6; // 4 gives a reasonable visualization on a power scale of 0 - 4.5
 
 	[SerializeField] protected ShotVisualizer shotVisualizer;
 	[SerializeField] protected GameObject proxyBoat;
@@ -30,7 +31,7 @@ public class MoveMarker : AcceptsInput {
 
 	public float FiringStrength {
 		get {
-			return playerShot.magnitude / 1f;
+			return playerShot.magnitude;
 		}
 	}
 
@@ -64,8 +65,13 @@ public class MoveMarker : AcceptsInput {
 	public static void SetTargetFiringStrength(Vector3 shot){
 		if (tappedMarker != null){
 			Vector3 scaledForScreen = shot;
-			scaledForScreen.x /= Screen.width / 2f;
-			scaledForScreen.y /= Screen.height / 2f;
+			scaledForScreen.x /= Screen.width / firingIndicationSensitivity;
+			scaledForScreen.y /= Screen.height / firingIndicationSensitivity;
+
+			float strength = PlayerBoat.maxFiringPower;
+			if (scaledForScreen.magnitude > strength){
+				scaledForScreen = Vector3.ClampMagnitude(scaledForScreen, strength);
+			}
 
 			tappedMarker.playerShot = scaledForScreen;
 		}
@@ -83,6 +89,10 @@ public class MoveMarker : AcceptsInput {
 		if (tappedMarker != null){
 			tappedMarker.shotVisualizer.IndicateMoveSet();
 		}
+	}
+
+	public static Vector3 PositionOnCamera(){
+		return CameraManager.WorldToGameCameraPoint(tappedMarker.transform.position);
 	}
 
 	public void UnselectMoveMarker(){

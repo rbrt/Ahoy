@@ -53,8 +53,11 @@ public class FiringHandler : InputHandler {
 	}
 
 	public override void OnSetHandler(){
-		initialPoint = PlayerController.LastInputPosition;
+		initialPoint = MoveMarker.PositionOnCamera();
+		initialPoint.z = 0;
+
 		currentPoint = PlayerController.LastInputPosition;
+
 		MoveMarker.ClearFiringVisualizer();
 	}
 

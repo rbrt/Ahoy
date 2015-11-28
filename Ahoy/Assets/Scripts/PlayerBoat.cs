@@ -5,8 +5,10 @@ public class PlayerBoat : AcceptsInput {
 
 	static PlayerBoat instance;
 	const float rotationDegreesPerSecond = 85;
+	public const float maxFiringPower = 4.5f;
 
-	float boatShotStrength = 5;
+	[Range(0, maxFiringPower)]
+	float boatShotStrength = 4.5f;
 
 	public static PlayerBoat Instance{
 		get {
