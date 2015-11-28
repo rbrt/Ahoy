@@ -67,7 +67,7 @@ public class MoveMarkerMenu : MonoBehaviour {
 		PlayerController.Instance.UnsetInputHandler();
 
 		open = true;
-		var translatedPoint = Camera.main.WorldToScreenPoint(worldPoint);
+		var translatedPoint = CameraManager.Instance.ShipGameplayCamera.WorldToScreenPoint(worldPoint);
 		var cachedTransform = mainPanel.GetComponent<RectTransform>();
 		Vector2 uiPosition = new Vector2(translatedPoint.x / canvas.scaleFactor,
 										 translatedPoint.y / canvas.scaleFactor);

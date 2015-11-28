@@ -9,9 +9,7 @@ using System.Linq;
 using System.IO;
 
 public class FiringHandler : InputHandler {
-
-	[SerializeField] protected ShotVisualizer shotVisualizer;
-
+	
 	float actionWaitTime = 1f;
 	bool releasesControlOnAction = true,
 		 interruptedBySendMessage = true;

@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour {
 				firingWaitTime = 1f,
 				turningWaitTime = 1f;
 
+	Camera gameplayCamera;
+
 	InputHandler currentInputHandler;
 
 	public InputHandler CurrentInputHandler{
@@ -108,7 +110,8 @@ public class PlayerController : MonoBehaviour {
 	void Awake (){
 		if (instance == null){
 			instance = this;
-
+			gameplayCamera = CameraManager.Instance.ShipGameplayCamera;
+				
 			SetInputHandler(nullInputHandler);
 		}
 	}
@@ -163,7 +166,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public static Vector3 TestForHitFromScreen(Vector3 inputPoint){
-		Ray fromCamera = Camera.main.ScreenPointToRay(inputPoint);
+		Ray fromCamera = instance.gameplayCamera.ScreenPointToRay(inputPoint);
 		RaycastHit info;
 		if (Physics.Raycast(fromCamera, out info)){
 			return info.point;
@@ -173,7 +176,7 @@ public class PlayerController : MonoBehaviour {
 
 	public static void SendInputAtScreenPoint(Vector3 screenPoint){
 		RaycastHit info;
-		Ray ray = Camera.main.ScreenPointToRay(screenPoint);
+		Ray ray = instance.gameplayCamera.ScreenPointToRay(screenPoint);
 		if (Physics.Raycast(ray, out info)){
 			if (info.collider.GetComponent<AcceptsInput>() != null){
 				info.collider.SendMessage("OnPlayerInput");
