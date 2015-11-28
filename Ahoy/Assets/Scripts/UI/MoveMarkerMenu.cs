@@ -53,7 +53,7 @@ public class MoveMarkerMenu : MonoBehaviour {
 		}
 
 		open = false;
-		this.StartCoroutine(DismissMenu());
+		this.StartSafeCoroutine(DismissMenu());
 	}
 
 	public void ShowMenu(Vector3 worldPoint){
@@ -85,7 +85,7 @@ public class MoveMarkerMenu : MonoBehaviour {
 
 		cachedTransform.anchoredPosition = uiPosition;
 
-		this.StartCoroutine(PresentMenu());
+		this.StartSafeCoroutine(PresentMenu());
 	}
 
 	public void EngageTurning(){
@@ -110,7 +110,6 @@ public class MoveMarkerMenu : MonoBehaviour {
 		canvasGroup.blocksRaycasts = false;
 
 		transitioning = false;
-		MoveMarker.ClearTargetMarker();
 	}
 
 	IEnumerator PresentMenu(){

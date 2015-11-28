@@ -21,7 +21,7 @@ public class ShotVisualizer : MonoBehaviour {
 		if (flashing){
 			return;
 		}
-		this.StartCoroutine(FlashColor());
+		this.StartSafeCoroutine(FlashColor());
 	}
 
 	public void SetPoints(List<Vector3> pointsToDraw){
@@ -30,6 +30,7 @@ public class ShotVisualizer : MonoBehaviour {
 		for (int i = 0; i < pointsToDraw.Count; i++){
 			lineRenderer.SetPosition(i, pointsToDraw[i]);
 		}
+
 		lineRenderer.enabled = true;
 	}
 

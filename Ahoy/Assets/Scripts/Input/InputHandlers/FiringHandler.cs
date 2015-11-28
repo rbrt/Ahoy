@@ -16,7 +16,8 @@ public class FiringHandler : InputHandler {
 	bool releasesControlOnAction = true,
 		 interruptedBySendMessage = true;
 
-	List<Vector3> shotPoints;
+	Vector3 initialPoint,
+			currentPoint;
 
 	public override float ActionWaitTime {
 		get {
@@ -37,9 +38,8 @@ public class FiringHandler : InputHandler {
 	}
 
 	public override void HandleDragInput(){
-		shotPoints.Clear();
-		shotPoints.Add(PlayerBoat.Instance.transform.position);
-		shotPoints.Add(PlayerController.TestForHitFromScreen(PlayerController.LastInputPosition));
+		currentPoint = PlayerController.LastInputPosition;
+		MoveMarker.SetTargetFiringStrength(GetShotVector());
 	}
 
 	public override void HandleInputUp(){
@@ -51,29 +51,18 @@ public class FiringHandler : InputHandler {
 	}
 
 	public override void DrawInput(){
-		if (shotPoints.Count == 0){
-			return;
-		}
-
-		List<Vector3> drawPoints = new List<Vector3>();
-		drawPoints.AddRange(shotPoints);
-
-		Vector3 temp = Vector3.one;
-		for (int i = 0; i < drawPoints.Count; i++){
-			temp = drawPoints[i];
-			temp.y = 1;
-			drawPoints[i] = temp;
-		}
-
-		shotVisualizer.SetPoints(drawPoints);
-	}
-
-	public override void OnSetHandler(){
 		
 	}
 
-	public override void OnUnSetHandler(){
+	public override void OnSetHandler(){
+		initialPoint = PlayerController.LastInputPosition;
+		currentPoint = PlayerController.LastInputPosition;
+		MoveMarker.ClearFiringVisualizer();
+	}
 
+	public override void OnUnSetHandler(){
+		MoveMarker.ClearTargetMarker();
+		CleanHandler();
 	}
 
 	public override bool ShouldInvokeInputAction(float testSeconds){
@@ -81,17 +70,22 @@ public class FiringHandler : InputHandler {
 	}
 
 	Vector3 GetShotVector(){
-		return PlayerBoat.Instance.transform.position - PlayerController.TestForHitFromScreen(PlayerController.LastInputPosition);
+		return currentPoint - initialPoint;
 	}
 
 	bool SetFiringTrajectory(){
-		shotVisualizer.IndicateMoveSet();
+		MoveMarker.IndicateMoveSet();
 		MoveMarker.SetTargetFiringStrength(GetShotVector());
 		return releasesControlOnAction;
 	}
 
 	void Awake(){
-		shotPoints = new List<Vector3>();
+		CleanHandler();
+	}
+
+	void CleanHandler(){
+		initialPoint = Vector3.zero;
+		currentPoint = Vector3.zero;
 	}
 
 }

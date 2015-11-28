@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3843d98f887d94e5c9240392fc4cf67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotVisualizer: {fileID: 11449690}
+  shotVisualizer: {fileID: 11449690}
   proxyBoat: {fileID: 138600}
 --- !u!120 &12081234
 LineRenderer:
@@ -265,6 +265,10 @@ Prefab:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: shotVisualizer
+      value: 
+      objectReference: {fileID: 11449690}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 146778}

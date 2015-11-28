@@ -12,7 +12,7 @@ public class MoveMarker : AcceptsInput {
 
 	const float proxyBoatAlpha = .6f;
 
-	[SerializeField] protected ShotVisualizer ShotVisualizer;
+	[SerializeField] protected ShotVisualizer shotVisualizer;
 	[SerializeField] protected GameObject proxyBoat;
 
 	Quaternion targetRotation;
@@ -28,16 +28,26 @@ public class MoveMarker : AcceptsInput {
 		}
 	}
 
+	public float FiringStrength {
+		get {
+			return playerShot.magnitude / 1f;
+		}
+	}
+
 	public override void OnPlayerInput(){
+		if (tappedMarker != null && tappedMarker != this){
+			tappedMarker.UnselectMoveMarker();
+		}
+
 		MoveMarkerMenu.Instance.ShowMenu(transform.position);
 		tappedMarker = this;
-		this.StartCoroutine(FadeBoat(true, .25f));
+		this.StartSafeCoroutine(FadeBoat(true, .25f));
 	}
 
 	void Awake(){
-		this.StartCoroutine(AnimateMarker());
+		this.StartSafeCoroutine(AnimateMarker());
 		playerShot = Vector3.zero;
-		this.StartCoroutine(FadeBoat(false, 0));
+		this.StartSafeCoroutine(FadeBoat(false, 0));
 	}
 
 	public static void SetTargetRotation(Quaternion target){
@@ -48,7 +58,11 @@ public class MoveMarker : AcceptsInput {
 
 	public static void SetTargetFiringStrength(Vector3 shot){
 		if (tappedMarker != null){
-			tappedMarker.playerShot = shot;
+			Vector3 scaledForScreen = shot;
+			scaledForScreen.x /= Screen.width / 2f;
+			scaledForScreen.y /= Screen.height / 2f;
+
+			tappedMarker.playerShot = scaledForScreen;
 		}
 	}
 
@@ -56,8 +70,45 @@ public class MoveMarker : AcceptsInput {
 		tappedMarker = null;
 	}
 
-	public void UpdatePlayerShot(Vector3 playerShot){
+	public static void ClearFiringVisualizer(){
+		tappedMarker.playerShot = Vector3.zero;
+	}
+
+	public static void IndicateMoveSet(){
+		if (tappedMarker != null){
+			tappedMarker.shotVisualizer.IndicateMoveSet();
+		}
+	}
+
+	public void UnselectMoveMarker(){
+		this.StartSafeCoroutine(FadeBoat(false, .25f));
+	}
+
+	Vector3 GetShotVector(){
+		return proxyBoat.transform.position + proxyBoat.transform.right * FiringStrength * PlayerBoat.Instance.BoatShotStrength;
+	}
+
+	void DrawFiringStrength(){
+		List<Vector3> shotPoints = new List<Vector3>();
+		shotPoints.Add(proxyBoat.transform.position);
+		shotPoints.Add(GetShotVector());
+
+		Vector3 adjusted;
+		for (int i = 0; i < shotPoints.Count; i++){
+			adjusted = shotPoints[i];
+			adjusted.y = 1;
+			shotPoints[i] = adjusted;
+		}
+
+		shotVisualizer.SetPoints(shotPoints);
+	}
+
+	void ClearFiringStrength(){
 		
+	}
+
+	void Update(){
+		DrawFiringStrength();
 	}
 
 	IEnumerator AnimateMarker(){

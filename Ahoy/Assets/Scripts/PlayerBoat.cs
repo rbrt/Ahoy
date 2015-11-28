@@ -6,9 +6,17 @@ public class PlayerBoat : AcceptsInput {
 	static PlayerBoat instance;
 	const float rotationDegreesPerSecond = 85;
 
+	float boatShotStrength = 5;
+
 	public static PlayerBoat Instance{
 		get {
 			return instance;
+		}
+	}
+
+	public float BoatShotStrength {
+		get {
+			return instance.boatShotStrength;
 		}
 	}
 
