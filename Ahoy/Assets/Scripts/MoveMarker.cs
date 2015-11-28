@@ -49,7 +49,7 @@ public class MoveMarker : AcceptsInput {
 		playerShot = Vector3.zero;
 
 		var proxyRenderer = proxyBoat.GetComponent<Renderer>();
-		Material boatMaterial = new Material(proxyRenderer.sharedMaterial);
+		Material boatMaterial = new Material(proxyRenderer.material);
 		proxyRenderer.material = boatMaterial;
 
 		this.StartSafeCoroutine(FadeBoat(false, 0));
