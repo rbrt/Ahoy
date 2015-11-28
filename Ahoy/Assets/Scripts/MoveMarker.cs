@@ -10,8 +10,15 @@ using System.IO;
 
 public class MoveMarker : AcceptsInput {
 
+	const float proxyBoatAlpha = .6f;
+
+	[SerializeField] protected ShotVisualizer ShotVisualizer;
+	[SerializeField] protected GameObject proxyBoat;
+
 	Quaternion targetRotation;
 	Vector3 playerShot;
+
+	bool fadingBoat = false;
 
 	static MoveMarker tappedMarker;
 
@@ -24,10 +31,13 @@ public class MoveMarker : AcceptsInput {
 	public override void OnPlayerInput(){
 		MoveMarkerMenu.Instance.ShowMenu(transform.position);
 		tappedMarker = this;
+		this.StartCoroutine(FadeBoat(true, .25f));
 	}
 
 	void Awake(){
 		this.StartCoroutine(AnimateMarker());
+		playerShot = Vector3.zero;
+		this.StartCoroutine(FadeBoat(false, 0));
 	}
 
 	public static void SetTargetRotation(Quaternion target){
@@ -44,6 +54,10 @@ public class MoveMarker : AcceptsInput {
 
 	public static void ClearTargetMarker(){
 		tappedMarker = null;
+	}
+
+	public void UpdatePlayerShot(Vector3 playerShot){
+		
 	}
 
 	IEnumerator AnimateMarker(){
@@ -63,5 +77,30 @@ public class MoveMarker : AcceptsInput {
 			renderer.sharedMaterial.SetColor("_Color", color);
 			yield return null;
 		}
+	}
+
+	IEnumerator FadeBoat(bool appear, float time){
+		if (fadingBoat){
+			yield break;
+		}
+
+		fadingBoat = true;
+		var renderers = proxyBoat.GetComponentsInChildren<Renderer>().ToList();
+		for (float i = 0; i <= 1; i += Time.deltaTime / time){
+			renderers.ForEach(x => {
+				Color color = x.sharedMaterial.color;
+				color.a = (appear ? i : (1 - i)) * proxyBoatAlpha;
+				x.sharedMaterial.color = color;
+			});
+			yield return null;
+		}
+
+		renderers.ForEach(x => {
+			Color color = x.sharedMaterial.color;
+			color.a = (appear ? 1 : 0) * proxyBoatAlpha;
+			x.sharedMaterial.color = color;
+		});
+
+		fadingBoat = false;
 	}
 }

@@ -22,7 +22,7 @@ public class PathVisualizer : MonoBehaviour {
 		if (flashing){
 			return;
 		}
-		this.StartCoroutine(FlashColor());
+		this.StartSafeCoroutine(FlashColor());
 	}
 
 	public void SetPoints(List<Vector3> pointsToDraw){

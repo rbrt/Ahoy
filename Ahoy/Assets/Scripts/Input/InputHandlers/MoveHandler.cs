@@ -85,6 +85,12 @@ public class MoveHandler : InputHandler {
 		return testSeconds > actionWaitTime;
 	}
 
+	public List<MoveMarker> MoveMarkers{
+		get {
+			return moveMarkers;
+		}
+	}
+
 	void Awake(){
 		moveMarkers = new List<MoveMarker>();
 		movePoints = new List<Vector3>();
