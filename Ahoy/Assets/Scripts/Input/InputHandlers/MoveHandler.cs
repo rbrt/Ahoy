@@ -14,10 +14,8 @@ public class MoveHandler : InputHandler {
 	bool releasesControlOnAction = false,
 		 interruptedBySendMessage = true;
 
-	[SerializeField] protected GameObject moveMarkerPrefab;
 	[SerializeField] protected PathVisualizer pathVisualizer;
 
-	List<MoveMarker> moveMarkers;
 	List<Vector3> movePoints;
 	List<Vector3> drawPoints;
 
@@ -74,7 +72,12 @@ public class MoveHandler : InputHandler {
 	}
 
 	public override void OnSetHandler(){
-		SetMoveAtPoint(PlayerBoat.Instance.transform.position);
+		if (movePoints.Count == 0){
+			SetMoveAtPoint(PlayerBoat.Instance.transform.position);
+		}
+		else {
+			MoveMarkerManager.Instance.RemoveExtraMoveMarkers(ref movePoints);
+		}
 	}
 
 	public override void OnUnSetHandler(){
@@ -85,14 +88,7 @@ public class MoveHandler : InputHandler {
 		return testSeconds > actionWaitTime;
 	}
 
-	public List<MoveMarker> MoveMarkers{
-		get {
-			return moveMarkers;
-		}
-	}
-
 	void Awake(){
-		moveMarkers = new List<MoveMarker>();
 		movePoints = new List<Vector3>();
 	}
 
@@ -108,27 +104,12 @@ public class MoveHandler : InputHandler {
 	void SetMoveAtPoint(Vector3 point){
 		movePoints.Add(point);
 		pathVisualizer.IndicateMoveSet();
-		CreateMarker(point);
-	}
-
-	void CreateMarker(Vector3 position){
-		var marker = GameObject.Instantiate(moveMarkerPrefab);
-		marker.transform.position = position;
-		marker.transform.rotation = Quaternion.identity;
-
-		moveMarkers.Add(marker.GetComponent<MoveMarker>());
-	}
-
-	void ClearMarkers(){
-		for (int i = 0; i < moveMarkers.Count; i++){
-			Destroy(moveMarkers[i].gameObject);
-		}
-		moveMarkers.Clear();
+		MoveMarkerManager.Instance.CreateMarker(point);
 	}
 
 	public void ClearMoves(){
 		movePoints.Clear();
-		ClearMarkers();
+		MoveMarkerManager.Instance.ClearMarkers();
 		pathVisualizer.ClearPoints();
 	}
 }

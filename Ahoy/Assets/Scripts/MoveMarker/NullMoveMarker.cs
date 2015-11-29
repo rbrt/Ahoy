@@ -20,4 +20,16 @@ public class NullMoveMarker : MoveMarker {
 	public override void SetPlayerShot(Vector3 playerShot){
 		
 	}
+
+	public override void OnSelectMoveMarker(){
+		
+	}
+
+	public override void OnUnselectMoveMarker(){
+		
+	}
+
+	public override void DestroyMarker(){
+		
+	}
 }

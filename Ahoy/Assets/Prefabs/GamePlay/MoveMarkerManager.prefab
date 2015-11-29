@@ -39,13 +39,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b998a48a1f72b43279d284bff5233c78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveMarkerPrefab: {fileID: 146778, guid: cd59753baf22f47bd8c74174a8a837c7, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: moveMarkerPrefab
+      value: 
+      objectReference: {fileID: 146778, guid: cd59753baf22f47bd8c74174a8a837c7, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 197412}

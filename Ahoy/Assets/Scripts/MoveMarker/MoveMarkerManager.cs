@@ -10,6 +10,8 @@ using System.IO;
 
 public class MoveMarkerManager : MonoBehaviour {
 
+	[SerializeField] protected GameObject moveMarkerPrefab;
+
 	const float proxyBoatAlpha = .6f;
 	const float firingIndicationSensitivity = 6; // 4 gives a reasonable visualization on a power scale of 0 - 4.5
 
@@ -24,6 +26,8 @@ public class MoveMarkerManager : MonoBehaviour {
 	MoveMarker currentMarker;
 	NullMoveMarker nullMoveMarker;
 
+	List<MoveMarker> moveMarkers;
+
 	public static MoveMarker CurrentMarker {
 		get {
 			return instance.currentMarker;
@@ -35,6 +39,7 @@ public class MoveMarkerManager : MonoBehaviour {
 	}
 
 	public static void ClearTargetMarker(){
+		instance.currentMarker.OnUnselectMoveMarker();
 		instance.currentMarker = instance.nullMoveMarker;
 	}
 
@@ -67,6 +72,33 @@ public class MoveMarkerManager : MonoBehaviour {
 
 	public static void SetCurrentMarker(MoveMarker marker){
 		instance.currentMarker = marker;
+		instance.StartSafeCoroutine(MoveMarkerMenu.Instance.ShowMenu(marker.transform.position));
+		marker.OnSelectMoveMarker();
+	}
+
+	public void CreateMarker(Vector3 position){
+		var marker = GameObject.Instantiate(moveMarkerPrefab);
+		marker.transform.position = position;
+		marker.transform.rotation = Quaternion.identity;
+
+		moveMarkers.Add(marker.GetComponent<MoveMarker>());
+	}
+
+	public void ClearMarkers(){
+		for (int i = 0; i < moveMarkers.Count; i++){
+			Destroy(moveMarkers[i].gameObject);
+		}
+		moveMarkers.Clear();
+	}
+
+	public void RemoveExtraMoveMarkers(ref List<Vector3> drawPoints){
+		int index = moveMarkers.IndexOf(currentMarker);
+		while (index < moveMarkers.Count() - 1){
+			int currentIndex = moveMarkers.Count() - 1;
+			Destroy(moveMarkers[currentIndex].gameObject);
+			moveMarkers.RemoveAt(currentIndex);
+			drawPoints.RemoveAt(currentIndex);
+		}	
 	}
 
 	void Awake(){
@@ -75,6 +107,7 @@ public class MoveMarkerManager : MonoBehaviour {
 			nullMoveMarker = (new GameObject("NullMoveMarker").AddComponent<NullMoveMarker>());
 			nullMoveMarker.transform.SetParent(this.transform);
 			currentMarker = nullMoveMarker;
+			moveMarkers = new List<MoveMarker>();
 		}
 		else {
 			Destroy(this.gameObject);

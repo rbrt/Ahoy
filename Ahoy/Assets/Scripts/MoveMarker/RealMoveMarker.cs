@@ -32,15 +32,15 @@ public class RealMoveMarker : MoveMarker {
 		}
 	}
 
-	// TODO: Move setting functionality into MoveMarkerManager
 	public override void OnPlayerInput(){
 		if (MoveMarkerManager.CurrentMarker != this){
-			MoveMarkerManager.ClearTargetMarker();
+			MoveMarkerManager.SetCurrentMarker(this);
 		}
-
-		this.StartSafeCoroutine(MoveMarkerMenu.Instance.ShowMenu(transform.position));
-		MoveMarkerManager.SetCurrentMarker(this);
-		this.StartSafeCoroutine(FadeBoat(true, .25f));
+		else {
+			PlayerController.Instance.Moving = true;
+			MoveMarkerMenu.Instance.HideMenu();
+			this.StartSafeCoroutine(SmoothFadeBoat(false, .25f));
+		}
 	}
 
 	void Awake(){
@@ -51,7 +51,7 @@ public class RealMoveMarker : MoveMarker {
 		Material boatMaterial = new Material(proxyRenderer.material);
 		proxyRenderer.material = boatMaterial;
 
-		this.StartSafeCoroutine(FadeBoat(false, 0));
+		this.StartSafeCoroutine(SmoothFadeBoat(false, 0));
 	}
 
 	public override void IndicateMoveSet(){
@@ -66,8 +66,16 @@ public class RealMoveMarker : MoveMarker {
 		this.playerShot = playerShot;
 	}
 
-	public void UnselectMoveMarker(){
-		this.StartSafeCoroutine(FadeBoat(false, .25f));
+	public override void OnSelectMoveMarker(){
+		this.StartSafeCoroutine(SmoothFadeBoat(true, .25f));
+	}
+
+	public override void OnUnselectMoveMarker(){
+		this.StartSafeCoroutine(SmoothFadeBoat(false, .25f));
+	}
+
+	public override void DestroyMarker(){
+		Destroy(this.gameObject);
 	}
 
 	Vector3 GetShotVector(){
@@ -94,7 +102,6 @@ public class RealMoveMarker : MoveMarker {
 		shotPoints.Add(Vector3.zero);
 		shotPoints.Add(Vector3.zero);
 		shotVisualizer.SetPoints(shotPoints);
-
 	}
 
 	void Update(){
@@ -120,7 +127,7 @@ public class RealMoveMarker : MoveMarker {
 		}
 	}
 
-	IEnumerator FadeBoat(bool appear, float time){
+	IEnumerator SmoothFadeBoat(bool appear, float time){
 		if (fadingBoat){
 			yield break;
 		}

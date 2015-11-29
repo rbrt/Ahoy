@@ -16,4 +16,10 @@ public abstract class MoveMarker : AcceptsInput {
 
 	public abstract void SetPlayerShot(Vector3 playerShot);
 
+	public abstract void OnSelectMoveMarker();
+
+	public abstract void OnUnselectMoveMarker();
+
+	public abstract void DestroyMarker();
+
 }

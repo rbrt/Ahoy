@@ -62,7 +62,6 @@ public class FiringHandler : InputHandler {
 	}
 
 	public override void OnUnSetHandler(){
-		MoveMarkerManager.ClearTargetMarker();
 		CleanHandler();
 	}
 
