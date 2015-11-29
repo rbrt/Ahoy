@@ -9,11 +9,15 @@ using System.Linq;
 using System.IO;
 
 public class NullMoveMarker : MoveMarker {
-	public override void IndicateMoveSet(){
+	public override void IndicateFiringMoveSet(){
 		
 	}
 
-	public override void SetTargetRotation(Quaternion targetRotation){
+	public override void IndicateTurningMoveSet(){
+
+	}
+
+	public override void SetTargetRotation(Vector3 initialPoint, Vector3 currentPoint){
 		
 	}
 

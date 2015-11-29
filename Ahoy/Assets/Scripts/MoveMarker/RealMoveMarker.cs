@@ -13,10 +13,12 @@ public class RealMoveMarker : MoveMarker {
 	const float firingIndicationSensitivity = 6; // 4 gives a reasonable visualization on a power scale of 0 - 4.5
 
 	[SerializeField] protected ShotVisualizer shotVisualizer;
+	[SerializeField] protected RealRotationMarker rotationMarker;
 	[SerializeField] protected GameObject proxyBoat;
 
 	Quaternion targetRotation;
 	Vector3 playerShot;
+	float rotationAngle;
 
 	bool fadingBoat = false;
 
@@ -37,9 +39,14 @@ public class RealMoveMarker : MoveMarker {
 			MoveMarkerManager.SetCurrentMarker(this);
 		}
 		else {
-			PlayerController.Instance.Moving = true;
-			MoveMarkerMenu.Instance.HideMenu();
-			this.StartSafeCoroutine(SmoothFadeBoat(false, .25f));
+			if (MoveMarkerMenu.Instance.Open){
+				PlayerController.Instance.Moving = true;
+				MoveMarkerMenu.Instance.HideMenu();
+				this.StartSafeCoroutine(SmoothFadeBoat(false, .25f));
+			}
+			else{
+				this.StartSafeCoroutine(MoveMarkerMenu.Instance.ShowMenu(transform.position));
+			}
 		}
 	}
 
@@ -54,12 +61,25 @@ public class RealMoveMarker : MoveMarker {
 		this.StartSafeCoroutine(SmoothFadeBoat(false, 0));
 	}
 
-	public override void IndicateMoveSet(){
+	void Start(){
+		rotationMarker = RotationMarkerManager.Instance.CreateRotationMarker(transform.position);
+	}
+
+	public override void IndicateFiringMoveSet(){
 		shotVisualizer.IndicateMoveSet();
 	}
 
-	public override void SetTargetRotation(Quaternion targetRotation){
-		this.targetRotation = targetRotation;
+	public override void IndicateTurningMoveSet(){
+		rotationMarker.IndicateRotationMoveSet();
+	}
+
+	public override void SetTargetRotation(Vector3 initialPoint, Vector3 currentPoint){
+		rotationAngle = rotationMarker.SetDirectionImageTarget(currentPoint);
+
+		proxyBoat.transform.rotation = Quaternion.identity;
+		proxyBoat.transform.Rotate(new Vector3(0, -rotationAngle, 0));
+
+		targetRotation = proxyBoat.transform.rotation;
 	}
 
 	public override void SetPlayerShot(Vector3 playerShot){

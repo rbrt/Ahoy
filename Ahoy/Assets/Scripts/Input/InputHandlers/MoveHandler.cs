@@ -10,7 +10,7 @@ using System.IO;
 
 public class MoveHandler : InputHandler {
 
-	float actionWaitTime = 1f;
+	float actionWaitTime = .5f;
 	bool releasesControlOnAction = false,
 		 interruptedBySendMessage = true;
 

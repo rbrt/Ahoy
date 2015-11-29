@@ -112,7 +112,7 @@ Camera:
   m_GameObject: {fileID: 771835005}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: .192156866, g: .301960796, b: .474509805, a: .0196078438}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -170,7 +170,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
 --- !u!1001 &1183457807
 Prefab:
   m_ObjectHideFlags: 0
@@ -208,31 +208,20 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 487594, guid: f69900c6697c047f08ecf73d57fc6321, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 22359272, guid: f69900c6697c047f08ecf73d57fc6321, type: 2}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 771835006}
     - target: {fileID: 22301898, guid: f69900c6697c047f08ecf73d57fc6321, type: 2}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 771835006}
-    - target: {fileID: 22359272, guid: f69900c6697c047f08ecf73d57fc6321, type: 2}
+    - target: {fileID: 22337294, guid: f69900c6697c047f08ecf73d57fc6321, type: 2}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 771835006}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f69900c6697c047f08ecf73d57fc6321, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1183457808 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 168394, guid: f69900c6697c047f08ecf73d57fc6321, type: 2}
-  m_PrefabInternal: {fileID: 1183457807}
---- !u!114 &1183457809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1183457808}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c7627b2194564c6e97ebb5d1eb67ac2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

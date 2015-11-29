@@ -14,6 +14,9 @@ public class TurningHandler : InputHandler {
 	bool releasesControlOnAction = true,
 		 interruptedBySendMessage = true;
 
+	Vector3 initialPoint = Vector3.zero,
+			currentPoint = Vector3.zero;
+
 	public override float ActionWaitTime {
 		get {
 			return actionWaitTime;
@@ -33,9 +36,8 @@ public class TurningHandler : InputHandler {
 	}
 
 	public override void HandleDragInput(){
-		if (PlayerController.Dragging){
-			PlayerBoat.Instance.FacePoint(CameraManager.TestForHitFromScreen(PlayerController.LastInputPosition));
-		}
+		currentPoint = PlayerController.LastInputPosition;
+		MoveMarkerManager.SetTargetRotation(initialPoint, currentPoint);
 	}
 
 	public override void HandleInputUp(){
@@ -51,20 +53,30 @@ public class TurningHandler : InputHandler {
 	}
 
 	public override void OnSetHandler(){
-		
+		initialPoint = MoveMarkerManager.CurrentMarkerPositionOnCamera();
+		initialPoint.z = 0;
+
+		currentPoint = PlayerController.LastInputPosition;
+
+		MoveMarkerManager.ClearRotationVisualizer();
 	}
 
 	public override void OnUnSetHandler(){
-		
+		CleanHandler();
 	}
 
 	public override bool ShouldInvokeInputAction(float testSeconds){
 		return testSeconds > actionWaitTime;
 	}
 
+	void CleanHandler(){
+		initialPoint = Vector3.zero;
+		currentPoint = Vector3.zero;
+	}
+
 	bool SetRotation(){
-		MoveMarkerManager.SetTargetRotation(PlayerBoat.Instance.transform.rotation);
-		PlayerBoat.Instance.transform.rotation = Quaternion.identity;
+		MoveMarkerManager.SetTargetRotation(initialPoint, currentPoint);
+		MoveMarkerManager.IndicateRotationMoveSet();
 		return releasesControlOnAction;
 	}
 

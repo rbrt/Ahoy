@@ -34,8 +34,13 @@ public class MoveMarkerManager : MonoBehaviour {
 		}
 	}
 
-	public static Vector3 PositionOnCamera(){
+	public static Vector3 CurrentMarkerPositionOnCamera(){
 		return CameraManager.WorldToGameCameraPoint(instance.currentMarker.transform.position);
+	}
+
+	public static Vector3 CurrentMarkerPositionOnCameraForRotation(){
+		Vector3 offset = instance.currentMarker.transform.forward;
+		return CameraManager.WorldToGameCameraPoint(instance.currentMarker.transform.position + offset);
 	}
 
 	public static void ClearTargetMarker(){
@@ -47,8 +52,16 @@ public class MoveMarkerManager : MonoBehaviour {
 		instance.currentMarker.SetPlayerShot(Vector3.zero);
 	}
 
-	public static void SetTargetRotation(Quaternion target){
-		instance.currentMarker.SetTargetRotation(target);
+	public static void ClearRotationVisualizer(){
+		instance.currentMarker.SetTargetRotation(Vector3.zero, Vector3.zero);
+	}
+
+	public static void SetTargetRotation(Vector3 initialPoint, Vector3 currentPoint){
+		instance.currentMarker.SetTargetRotation(initialPoint, currentPoint);
+	}
+
+	public static void IndicateRotationMoveSet(){
+		instance.currentMarker.IndicateTurningMoveSet();
 	}
 
 	public static void SetTargetFiringStrength(Vector3 shot){
@@ -64,9 +77,9 @@ public class MoveMarkerManager : MonoBehaviour {
 		instance.currentMarker.SetPlayerShot(scaledForScreen);
 	}
 
-	public static void IndicateMoveSet(){
+	public static void IndicateFiringMoveSet(){
 		if (instance.currentMarker != null){
-			instance.currentMarker.IndicateMoveSet();
+			instance.currentMarker.IndicateFiringMoveSet();
 		}
 	}
 
@@ -82,6 +95,7 @@ public class MoveMarkerManager : MonoBehaviour {
 		marker.transform.rotation = Quaternion.identity;
 
 		moveMarkers.Add(marker.GetComponent<MoveMarker>());
+		marker.transform.SetParent(this.transform);
 	}
 
 	public void ClearMarkers(){

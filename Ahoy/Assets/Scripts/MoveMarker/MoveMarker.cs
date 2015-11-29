@@ -10,9 +10,11 @@ using System.IO;
 
 public abstract class MoveMarker : AcceptsInput {
 
-	public abstract void IndicateMoveSet();
+	public abstract void IndicateFiringMoveSet();
 
-	public abstract void SetTargetRotation(Quaternion targetRotation);
+	public abstract void IndicateTurningMoveSet();
+
+	public abstract void SetTargetRotation(Vector3 initialPoint, Vector3 currentPoint);
 
 	public abstract void SetPlayerShot(Vector3 playerShot);
 
