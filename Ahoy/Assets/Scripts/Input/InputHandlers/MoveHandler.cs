@@ -14,7 +14,7 @@ public class MoveHandler : InputHandler {
 	bool releasesControlOnAction = false,
 		 interruptedBySendMessage = true;
 
-	[SerializeField] protected PathVisualizer pathVisualizer;
+	[SerializeField] protected MovePathVisualizer pathVisualizer;
 
 	List<Vector3> movePoints;
 	List<Vector3> drawPoints;
@@ -69,6 +69,8 @@ public class MoveHandler : InputHandler {
 		}
 
 		pathVisualizer.SetPoints(drawPoints);
+
+		ShipPathVisualizer.Instance.VisualizePathForPoints(drawPoints);
 	}
 
 	public override void OnSetHandler(){

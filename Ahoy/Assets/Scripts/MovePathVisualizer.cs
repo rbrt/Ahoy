@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-public class PathVisualizer : MonoBehaviour {
+public class MovePathVisualizer : MonoBehaviour {
 
 	LineRenderer lineRenderer;
 	bool flashing = false;
