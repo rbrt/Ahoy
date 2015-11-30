@@ -14,16 +14,15 @@ public class RealRotationMarker : RotationMarker {
 	[SerializeField] protected Image directionImage;
 	[SerializeField] protected Image baseDirectionImage;
 
-	RectTransform baseDirectionRect;
 	RectTransform directionRect;
 
 	float highlightTime = .15f;
 
-	public void SetRotationImageFill(float fill){
+	public override void SetRotationImageFill(float fill){
 		rotationImage.fillAmount = fill;
 	}
 
-	public float SetDirectionImageTarget(Vector3 target){
+	public override float SetDirectionImageTarget(Vector3 target){
 		var adjustedPosition = CameraManager.WorldToGameCameraPoint(directionRect.position);
 		target = new Vector3(target.y, 0, target.x);
 		adjustedPosition = new Vector3(adjustedPosition.y, 0, adjustedPosition.x);
@@ -39,12 +38,11 @@ public class RealRotationMarker : RotationMarker {
 		return temp.z;
 	}
 
-	public void IndicateRotationMoveSet(){
+	public override void IndicateRotationMoveSet(){
 		this.StartSafeCoroutine(HighlightIndicator());
 	}
 
 	void Awake(){
-		baseDirectionRect = baseDirectionImage.GetComponent<RectTransform>();
 		directionRect = directionImage.GetComponent<RectTransform>();
 	}
 
