@@ -19,7 +19,7 @@ public class ShipPathVisualizer : MonoBehaviour {
 	int curvePointDensity = 50;
 	Vector3 lastDirection = Vector3.zero;
 
-	float targetFirstAngleSlope = 50;
+	float targetFirstAngleSlope = 15;
 
 	public static ShipPathVisualizer Instance {
 		get {
@@ -32,11 +32,96 @@ public class ShipPathVisualizer : MonoBehaviour {
 			InitializeLineRenderers(points.Count);
 		}
 
-		Vector3 initializationVector = (points[0] + PlayerBoat.Instance.transform.forward) - points[0];
-		initializationVector.y = points[0].y;
-
 		for (int i = 1; i < points.Count; i++){
-			VisualizeCurve(points[i-1], points[i], i-1, initializationVector);
+			//VisualizeCurve(points[i-1], points[i], i-1, initializationVector);
+		}
+
+		curveDegree = points.Count - 1;
+		VisualizeBSpline(points);
+	}
+
+	public int curveDegree = 1; // Degree of the curve
+	private Vector3[] cachedControlPoints; // cached control points
+	private int[] nV; // Node vector
+
+	void Start(){
+		cachedControlPoints = new Vector3[0];
+		List<Vector3> points = new List<Vector3>();
+		CacheControlPoints(ref points);
+		nV = new int[5];
+		createNodeVector();
+	}
+
+	void VisualizeBSpline(List<Vector3> controlPoints){
+		if(controlPoints.Count <= 0){
+			return;	
+		}
+
+		cachedControlPoints = new Vector3[controlPoints.Count];
+
+		// Cached the control points
+		CacheControlPoints(ref controlPoints);
+
+		if(cachedControlPoints.Length <= 0){
+			return;
+		}
+
+		// Initialize node vector.
+		nV = new int[cachedControlPoints.Length + curveDegree + 1];
+		createNodeVector();
+
+		Vector3 start = cachedControlPoints[0];
+		Vector3 end = Vector3.zero;
+
+		float increment = .01f;
+
+		lineRenderers[0].SetVertexCount((int)(1 / increment) + 2);
+		int index = 0;
+		for(float i = 0.0f; i < nV[curveDegree + cachedControlPoints.Length]; i += increment){
+			for(int j = 0; j < cachedControlPoints.Length; j++){
+				if(i >= j){
+					end = deBoor(curveDegree, j, i);
+				}
+			}
+			lineRenderers[0].SetPosition(index, start);
+			index++;
+			start = end;
+		}
+		lineRenderers[0].SetPosition(index, start);
+	}
+
+	// Recursive deBoor algorithm.
+	public Vector3 deBoor(int r, int i, float u){
+		if(r == 0){
+			return cachedControlPoints[i];
+		}
+		else{
+			float pre = (u - nV[i + r]) / (nV[i + curveDegree + 1] - nV[i + r]);
+			return ((deBoor(r - 1, i, u) * (1 - pre)) + (deBoor(r - 1, i + 1, u) * (pre)));
+		}
+	}
+
+	public void createNodeVector(){
+		int knoten = 0;
+		// n+m+1 = nr of nodes
+		for(int i = 0; i < (curveDegree + cachedControlPoints.Length + 1); i++){
+			if(i > curveDegree){
+				if(i <= cachedControlPoints.Length){
+					nV[i] = ++knoten;
+				}
+				else{
+					nV[i] = knoten;
+				}
+			}
+			else {
+				nV[i] = knoten;
+			}
+		}
+	}
+
+	private void CacheControlPoints(ref List<Vector3> controlPoints){
+		for(int i = 0; i < controlPoints.Count; i++){
+			cachedControlPoints[i] = controlPoints[i];
 		}
 	}
 
@@ -51,53 +136,62 @@ public class ShipPathVisualizer : MonoBehaviour {
 		midpoint1 = Vector3.Lerp(p1, p4, .15f);
 		midpoint2 = Vector3.Lerp(p1, p4, .85f);
 
-		if (rendererIndex == 0){
-			p2 = midpoint1 + Vector3.Cross(midpoint1 - p1, Vector3.up);	
-		}
+		p2 = midpoint1 + Vector3.Cross(midpoint1 - p1, Vector3.up);	
 
 		p3 = midpoint2 + Vector3.Cross(p4 - midpoint2, Vector3.up);
 		p2.y = p1.y;
 		p3.y = p1.y;
 
-		Debug.DrawLine(p1, p4, Color.gray);
+		Debug.DrawLine(midpoint1, p2, Color.gray);
 		Debug.DrawLine(midpoint, midpoint + Vector3.up, Color.gray);
-		Debug.DrawLine(p2, midpoint1, Color.cyan);
-		Debug.DrawLine(p3, midpoint2, Color.cyan);
 
-		float firstAngleSteepness = Vector3.Angle(initializationVector - p1, p2 - p1);
-		Debug.Log(initializationVector + " " + p1 + " " + p2);
-		Vector3 p2Offset = initializationVector * 20;
+		var firstPoint = Mathx.InterpolatedPointOnBezierCurve(p1, p2, p3, p4, .3f);
+		var comparison = firstPoint - p1;
+		comparison.y = firstPoint.y;
+
+		float firstAngleSteepness = Vector3.Angle(initializationVector, comparison);
+		Vector3 p2Offset = (p2 - midpoint1) * .05f;
 		p2Offset.y = initializationVector.y;
-
 
 		float temp = firstAngleSteepness;
 		int iterations = 0;
 		bool itHappened = false;
 		float boost = 1;
-		for (float i = 1 ; firstAngleSteepness < targetFirstAngleSlope; i += .01f){
+		for (float i = 0; firstAngleSteepness > targetFirstAngleSlope; i += .3f){
 			itHappened = true;
 			iterations++;
-			p2 = midpoint1 + Vector3.Cross(midpoint1 - p1, Vector3.up);
-			p2 += p2Offset * i;
-			if (rendererIndex == 0){
-				firstAngleSteepness = Vector3.Angle(initializationVector - p1, p2 - p1);
-			}
-			else {
-				firstAngleSteepness = Vector3.Angle(initializationVector - p1, p2 - p1);
-				//firstAngleSteepness = Vector3.Angle(midpoint1 - p1, p2 - p1);	
-			}
-			Debug.DrawLine(p1, midpoint1, Color.red);
-			Debug.DrawLine(p1, p2, Color.green);
+			p2 += p2Offset;
+			p2.y = p1.y;
 
-			if (iterations >= 10){
-				firstAngleSteepness = targetFirstAngleSlope;
+			firstPoint = Mathx.InterpolatedPointOnBezierCurve(p1, p2, p3, p4, .1f);
+			comparison = firstPoint - p1;
+			comparison.y = p1.y;
+
+			firstAngleSteepness = Vector3.Angle(initializationVector, comparison);
+
+			if (iterations >= 50){
+				break;
 			}
 
 			boost = i;
 		}
-		//Debug.Log("Final Steepness: " + firstAngleSteepness + " initial angle: " + temp);
+
+		initializationVector *= 100;
+		initializationVector.y = p1.y;
+		comparison *= 100;
+		comparison.y = p1.y;
+
+		Debug.DrawLine(p1, (p1 + initializationVector), Color.red);
+		Debug.DrawLine(p1, (p1 + comparison), Color.yellow);
+
+		Debug.DrawLine(midpoint1, p2, Color.cyan);
+		Debug.DrawLine(midpoint2, p3, Color.cyan);
+
 		if (itHappened){
-			Debug.DrawLine(midpoint1 + Vector3.Cross(midpoint1 - p1, Vector3.up), 20 * (p2 - (midpoint1 + Vector3.Cross(midpoint1 - p1, Vector3.up))));
+			Debug.Log("Final Steepness: " + firstAngleSteepness + " initial angle: " + temp);
+		}
+		else{
+			Debug.Log("Angle: " + firstAngleSteepness);
 		}
 
 		p3 += (p3 - midpoint2).normalized * boost * 5;
