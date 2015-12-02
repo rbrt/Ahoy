@@ -97,7 +97,7 @@ public class PlayerController : MonoBehaviour {
 			return currentInputHandler == gameplayCameraHandler;
 		}
 		set {
-			if (value){
+			if (value && currentInputHandler == nullInputHandler){
 				SetInputHandler(gameplayCameraHandler);	
 			}
 		}

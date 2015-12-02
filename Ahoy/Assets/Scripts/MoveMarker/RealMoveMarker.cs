@@ -62,7 +62,7 @@ public class RealMoveMarker : MoveMarker {
 	}
 
 	void Start(){
-		rotationMarker = RotationMarkerManager.Instance.CreateRotationMarker(transform.position);
+		rotationMarker = RotationMarkerManager.Instance.CreateRotationMarker(transform);
 	}
 
 	public override void IndicateFiringMoveSet(){

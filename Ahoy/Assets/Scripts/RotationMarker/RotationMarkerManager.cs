@@ -17,7 +17,7 @@ public class RotationMarkerManager : MonoBehaviour {
 
 	static RotationMarkerManager instance;
 
-	List<RotationMarker> rotationMarkerList;
+	Dictionary<RotationMarker, Transform> rotationMarkerMapping;
 
 	public static RotationMarkerManager Instance {
 		get {
@@ -25,9 +25,10 @@ public class RotationMarkerManager : MonoBehaviour {
 		}
 	}
 
-	public RealRotationMarker CreateRotationMarker(Vector3 position){
+	public RealRotationMarker CreateRotationMarker(Transform targetMarker){
+		Vector3 position = targetMarker.position;
 		RealRotationMarker newMarker = (GameObject.Instantiate(rotationMarkerPrefab) as GameObject).GetComponent<RealRotationMarker>();
-		rotationMarkerList.Add(newMarker);
+		rotationMarkerMapping[newMarker] = targetMarker;
 		var markerTransform = newMarker.GetComponent<RectTransform>();
 		markerTransform.SetParent(this.transform);
 		markerTransform.localRotation = Quaternion.identity;
@@ -43,16 +44,14 @@ public class RotationMarkerManager : MonoBehaviour {
 	}
 
 	public void ClearRotationMarkerList(){
-		for (int i = 0; i < rotationMarkerList.Count; i++){
-			Destroy(rotationMarkerList[i].gameObject);
-		}
-		rotationMarkerList.Clear();
+		rotationMarkerMapping.Keys.ToList().ForEach(key => Destroy(rotationMarkerMapping[key].gameObject));
+		rotationMarkerMapping.Clear();
 	}
 
 	void Awake(){
 		if (instance == null){
 			instance = this;
-			rotationMarkerList = new List<RotationMarker>();
+			rotationMarkerMapping = new Dictionary<RotationMarker, Transform>();
 			shipGameplayCamera = CameraManager.Instance.ShipGameplayCamera;
 			canvas = GetComponent<Canvas>();
 		}
@@ -60,6 +59,16 @@ public class RotationMarkerManager : MonoBehaviour {
 			Destroy(this.gameObject);
 			Debug.Log("Destroyed duplicate instance of RotationMarkerManager");
 		}
+	}
+
+	void Update(){
+		rotationMarkerMapping.Keys.ToList().ForEach(key => {
+			var translatedPoint = shipGameplayCamera.WorldToScreenPoint(rotationMarkerMapping[key].position);
+			Vector2 uiPosition = new Vector2(translatedPoint.x / canvas.scaleFactor,
+											 translatedPoint.y / canvas.scaleFactor);
+
+			key.GetComponent<RectTransform>().anchoredPosition = uiPosition;
+		});
 	}
 
 }

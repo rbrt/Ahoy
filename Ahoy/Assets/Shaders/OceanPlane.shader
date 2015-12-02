@@ -9,7 +9,7 @@
 	SubShader {
 		Tags { "RenderType"="Opaque" }
 		LOD 200
-		
+
 		CGPROGRAM
 		#pragma surface surf Standard fullforwardshadows
 		#pragma target 3.0
@@ -28,7 +28,8 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed2 bumpUV = IN.uv_BumpMap;
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+			fixed2 mainUV = IN.uv_MainTex;
+			fixed4 c = tex2D (_MainTex, mainUV) * _Color;
 			o.Albedo = c.rgb;
 			o.Normal = UnpackNormal(tex2D(_BumpMap, bumpUV));
 
@@ -37,6 +38,6 @@
 			o.Alpha = c.a;
 		}
 		ENDCG
-	} 
+	}
 	FallBack "Diffuse"
 }
