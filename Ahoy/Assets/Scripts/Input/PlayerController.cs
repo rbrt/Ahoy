@@ -14,7 +14,10 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] protected FiringHandler firingHandler;
 	[SerializeField] protected TurningHandler turningHandler;
 	[SerializeField] protected MoveHandler movingHandler;
+	[SerializeField] protected GameplayCameraHandler gameplayCameraHandler;
 	[SerializeField] protected NullInputHandler nullInputHandler;
+
+	InputHandler[] inputHandlers;
 
 	static PlayerController instance;
 
@@ -89,6 +92,17 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	public bool Scrolling {
+		get {
+			return currentInputHandler == gameplayCameraHandler;
+		}
+		set {
+			if (value){
+				SetInputHandler(gameplayCameraHandler);	
+			}
+		}
+	}
+
 	public Vector3 LastPosition {
 		get {
 			return lastPosition;
@@ -115,6 +129,7 @@ public class PlayerController : MonoBehaviour {
 	void Update(){
 		HandleInput();
 		DrawPath();
+		HandlePassiveActions();
 	}
 
 	void SetInputHandler(InputHandler handler){
@@ -122,9 +137,14 @@ public class PlayerController : MonoBehaviour {
 		currentInputHandler.OnSetHandler();
 	}
 
-	List<Vector3> drawPoints;
 	void DrawPath(){
 		currentInputHandler.DrawInput();
+	}
+
+	void HandlePassiveActions(){
+		for (int i = 0; i < inputHandlers.Length; i++){
+			inputHandlers[i].PassiveAction();
+		}
 	}
 
 	void HandleInput(){
@@ -152,8 +172,8 @@ public class PlayerController : MonoBehaviour {
 			if (Input.mousePosition != lastPosition){
 				timeWithoutMoving = Time.time;
 			}
-			lastPosition = Input.mousePosition;
 		}
+		lastPosition = Input.mousePosition;
 	}
 
 	public void UnsetInputHandler(){
@@ -171,5 +191,9 @@ public class PlayerController : MonoBehaviour {
 
 	public void TestRun(){
 		
+	}
+
+	void Start(){
+		inputHandlers = GetComponents<InputHandler>();
 	}
 }

@@ -90,6 +90,10 @@ public class MoveHandler : InputHandler {
 		return testSeconds > actionWaitTime;
 	}
 
+	public override void PassiveAction(){
+
+	}
+
 	void Awake(){
 		movePoints = new List<Vector3>();
 	}

@@ -69,6 +69,10 @@ public class TurningHandler : InputHandler {
 		return testSeconds > actionWaitTime;
 	}
 
+	public override void PassiveAction(){
+
+	}
+
 	void CleanHandler(){
 		initialPoint = Vector3.zero;
 		currentPoint = Vector3.zero;

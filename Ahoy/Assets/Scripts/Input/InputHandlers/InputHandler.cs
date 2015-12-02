@@ -34,6 +34,8 @@ public abstract class InputHandler : MonoBehaviour {
 
 	public abstract void DrawInput();
 
+	public abstract void PassiveAction();
+
 	public abstract bool ShouldInvokeInputAction(float testSeconds);
 
 }

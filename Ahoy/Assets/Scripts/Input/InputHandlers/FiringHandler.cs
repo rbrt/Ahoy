@@ -69,6 +69,10 @@ public class FiringHandler : InputHandler {
 		return testSeconds > actionWaitTime;
 	}
 
+	public override void PassiveAction(){
+		
+	}
+
 	Vector3 GetShotVector(){
 		return currentPoint - initialPoint;
 	}

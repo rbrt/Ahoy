@@ -42,4 +42,6 @@ public class NullInputHandler : InputHandler {
 	public override bool ShouldInvokeInputAction(float testSeconds){
 		return false;
 	}
+
+	public override void PassiveAction(){}
 }
